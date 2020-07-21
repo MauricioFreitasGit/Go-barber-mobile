@@ -7,6 +7,7 @@ import { Image,
     TextInput,
     Alert
   } from 'react-native';
+import {useAuth} from '../../hooks/Auth';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import logoImg from '../../assets/logo.png';
@@ -32,10 +33,12 @@ interface SignInFormData{
 }
 
 const SignIn: React.FC = () => {
+  const { signIn,user } = useAuth();
+
   const navigation = useNavigation();
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
-  const handleSign = useCallback(
+   const handleSign = useCallback(
     async (data: SignInFormData) => {
       formRef.current?.setErrors({});
       try {
@@ -45,15 +48,16 @@ const SignIn: React.FC = () => {
             .email('Digite um email válido'),
           password: Yup.string().required('Senha obrigatória'),
         });
-
         await schema.validate(data, {
           abortEarly: false,
         });
-/*         await signIn({
+
+
+        const response =  await signIn({
           email: data.email,
           password: data.password,
         });
-        history.push('/dashboard'); */
+
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -64,7 +68,7 @@ const SignIn: React.FC = () => {
 
       }
     },
-    [],
+    [signIn],
   );
   return (
     <>
